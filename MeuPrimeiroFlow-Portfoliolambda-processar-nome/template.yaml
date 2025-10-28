@@ -1,0 +1,53 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: >
+  Projeto de Portfólio: Fluxo de Trabalho Condicional (AWS Step Functions e Lambda).
+  Orquestra duas Lambdas, usando o Choice state para lógica condicional.
+
+Globals:
+  Function:
+    Runtime: nodejs20.x 
+    MemorySize: 128
+    Timeout: 10
+
+Resources:
+  # 1. Definição da Lambda ProcessarNome
+  ProcessarNomeFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: MeuPrimeiroFlow-ProcessarNome
+      CodeUri: lambda-processar-nome/
+      Handler: index.handler
+      Policies:
+        - AWSLambdaBasicExecutionRole
+
+  # 2. Definição da Lambda SaudacaoFinal
+  SaudacaoFinalFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: MeuPrimeiroFlow-SaudacaoFinal
+      CodeUri: lambda-saudacao-final/
+      Handler: index.handler
+      Policies:
+        - AWSLambdaBasicExecutionRole
+
+  # 3. Definição da Máquina de Estados (Step Functions)
+  MeuPrimeiroStateMachine:
+    Type: AWS::Serverless::StateMachine
+    Properties:
+      # **ATENÇÃO:** Você precisa criar este arquivo e copiar a Definição JSON do Step Functions nele!
+      DefinitionUri: state_machine_definition.json 
+      
+      # Nome do recurso, corrigido para evitar erro de validação (Linha ~38/40)
+      StateMachineName: !Sub "${AWS::StackName}-MeuPrimeiroFlow"
+      Type: STANDARD
+      
+      # Políticas de Permissão para Invocar as Lambdas (Corrigido para uso do !GetAtt)
+      Policies:
+        # A chave de permissão para invocar Lambda
+        - LambdaInvokePolicy:
+            # Uso correto do !GetAtt para referenciar o ARN da função
+            FunctionName: !GetAtt ProcessarNomeFunction.Arn
+        # Outra chave de permissão para invocar Lambda
+        - LambdaInvokePolicy:
+            FunctionName: !GetAtt SaudacaoFinalFunction.Arn

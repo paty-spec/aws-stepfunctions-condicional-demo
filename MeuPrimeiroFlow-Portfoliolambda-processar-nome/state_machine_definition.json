@@ -1,0 +1,68 @@
+{
+  "Comment": "A description of my state machine",
+  "StartAt": "ProcessarNome",
+  "States": {
+    "ProcessarNome": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::lambda:invoke",
+      "Output": "{% $states.result.Payload %}",
+      "Arguments": {
+        "FunctionName": "arn:aws:lambda:us-east-1:246343462185:function:ProcessarNome:$LATEST",
+        "Payload": "{% $states.input %}"
+      },
+      "Retry": [
+        {
+          "ErrorEquals": [
+            "Lambda.ServiceException",
+            "Lambda.AWSLambdaException",
+            "Lambda.SdkClientException",
+            "Lambda.TooManyRequestsException"
+          ],
+          "IntervalSeconds": 1,
+          "MaxAttempts": 3,
+          "BackoffRate": 2,
+          "JitterStrategy": "FULL"
+        }
+      ],
+      "Next": "Escolha"
+    },
+    "Escolha": {
+      "Type": "Choice",
+      "Choices": [
+        {
+          "Next": "Saudacao Especial",
+          "Condition": "{% ($input.nomeProcessado) = (\"USUARIO_TESTE\") %}"
+        }
+      ],
+      "Default": "Êxito"
+    },
+    "Êxito": {
+      "Type": "Succeed"
+    },
+    "Saudacao Especial": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::lambda:invoke",
+      "Output": "{% $states.result.Payload %}",
+      "Arguments": {
+        "FunctionName": "arn:aws:lambda:us-east-1:246343462185:function:SaudacaoFinal:$LATEST",
+        "Payload": "{% $states.input %}"
+      },
+      "Retry": [
+        {
+          "ErrorEquals": [
+            "Lambda.ServiceException",
+            "Lambda.AWSLambdaException",
+            "Lambda.SdkClientException",
+            "Lambda.TooManyRequestsException"
+          ],
+          "IntervalSeconds": 1,
+          "MaxAttempts": 3,
+          "BackoffRate": 2,
+          "JitterStrategy": "FULL"
+        }
+      ],
+      "End": true
+    }
+  },
+  "QueryLanguage": "JSONata"
+}
