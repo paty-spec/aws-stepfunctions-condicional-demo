@@ -15,7 +15,8 @@ O projeto segue um fluxo Padrão (Standard) com três etapas principais:
     * **Default:** Se não for, segue para o estado `Êxito` (Sucesso).
 3.  **Saudação Especial (Task Lambda):** Executa apenas para o caminho especial e finaliza o fluxo com uma mensagem customizada.
 
-![Diagrama do AWS Step Functions](imagensdiagrama_fluxo.png)
+![Diagrama do AWS Step Functions]
+(https://github.com/paty-spec/aws-stepfunctions-condicional-demo/blob/c871984911e78d704fb4a56ef997e5809ed33047/imagensdiagrama_fluxo.png/Captura%20de%20tela%202025-10-27%20202821.png)
 
 ## ✅ Resultado Comprovado
 
